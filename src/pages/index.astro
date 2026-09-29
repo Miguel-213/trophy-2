@@ -1,35 +1,17 @@
----
-import { supabase } from '../lib/supabase'
-
-const { data: trofeos, error } = await supabase
-  .from('trofeos')
-  .select('*')
-  .order('id')
----
-
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
     <title>Trophy 2</title>
   </head>
 
   <body>
-    <h1>Trofeos</h1>
+    <main>
+      <h1>Trophy 2</h1>
 
-    {
-      error ? (
-        <p>Error al cargar los trofeos: {error.message}</p>
-      ) : (
-        <ul>
-          {
-            trofeos?.map((trofeo) => (
-              <li>
-                {trofeo.nombre} - {trofeo.juego}
-              </li>
-            ))
-          }
-        </ul>
-      )
-    }
+      <p>Aplicación de administración de trofeos.</p>
+
+      <a href="/trofeos">Ver trofeos</a>
+    </main>
   </body>
 </html>

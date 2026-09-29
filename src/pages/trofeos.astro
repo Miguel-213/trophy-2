@@ -1,0 +1,61 @@
+---
+export const prerender = false
+
+import { supabase } from '../lib/supabase'
+
+const { data: trofeos, error } = await supabase
+  .from('trofeos')
+  .select('*')
+  .order('id')
+---
+
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Trofeos | Trophy 2</title>
+  </head>
+
+  <body>
+    <main>
+      <h1>Listado de trofeos</h1>
+
+      <p>Consulta pública de todos los trofeos registrados.</p>
+
+      {
+        error ? (
+          <p>Error al cargar los trofeos: {error.message}</p>
+        ) : (
+          <div>
+            {
+              trofeos?.map((trofeo) => (
+                <article>
+                  <h2>{trofeo.nombre}</h2>
+
+                  <p>
+                    <strong>Juego:</strong> {trofeo.juego}
+                  </p>
+
+                  <p>
+                    <strong>Dificultad:</strong> {trofeo.dificultad}
+                  </p>
+
+                  <p>
+                    <strong>Requisito:</strong> {trofeo.requisito}
+                  </p>
+
+                  <p>
+                    <strong>Estado:</strong>{' '}
+                    {trofeo.estado ? 'Conseguido' : 'No conseguido'}
+                  </p>
+
+                  <hr />
+                </article>
+              ))
+            }
+          </div>
+        )
+      }
+    </main>
+  </body>
+</html>
