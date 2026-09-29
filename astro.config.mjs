@@ -1,8 +1,21 @@
 // @ts-check
-import { defineConfig } from 'astro/config';
-import cloudflare from '@astrojs/cloudflare';
+import { defineConfig, envField } from 'astro/config'
+import cloudflare from '@astrojs/cloudflare'
 
-// https://astro.build/config
 export default defineConfig({
-  adapter: cloudflare()
-});
+  adapter: cloudflare(),
+
+  env: {
+    schema: {
+      PUBLIC_SUPABASE_URL: envField.string({
+        context: 'client',
+        access: 'public'
+      }),
+
+      PUBLIC_SUPABASE_PUBLISHABLE_KEY: envField.string({
+        context: 'client',
+        access: 'public'
+      })
+    }
+  }
+})
