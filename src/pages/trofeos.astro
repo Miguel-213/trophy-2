@@ -3,10 +3,60 @@ export const prerender = false
 
 import { supabase } from '../lib/supabase'
 
-const { data: trofeos, error } = await supabase
+// Leer los parámetros de la URL
+const q = Astro.url.searchParams.get('q')?.trim() || ''
+const pageParam = Number(Astro.url.searchParams.get('page') || '1')
+
+// Evitamos páginas 0, negativas o valores raros
+const page = Number.isInteger(pageParam) && pageParam > 0
+  ? pageParam
+  : 1
+
+// Queremos mostrar 5 trofeos por página
+const porPagina = 5
+
+// Calculamos qué registros pedirle a Supabase
+const desde = (page - 1) * porPagina
+const hasta = desde + porPagina - 1
+
+// Creamos la consulta
+let consulta = supabase
   .from('trofeos')
-  .select('*')
-  .order('id')
+  .select('*', { count: 'exact' })
+  .order('id', { ascending: true })
+
+// Si escribieron algo en la búsqueda,
+// filtramos por el nombre del trofeo
+if (q) {
+  consulta = consulta.ilike('nombre', `%${q}%`)
+}
+
+// Aplicamos la paginación
+consulta = consulta.range(desde, hasta)
+
+// Ejecutamos la consulta
+const {
+  data: trofeos,
+  error,
+  count
+} = await consulta
+
+// Calculamos cuántas páginas existen
+const totalTrofeos = count || 0
+const totalPaginas = Math.ceil(totalTrofeos / porPagina)
+
+// Función para crear las URLs de los botones
+function urlPagina(numero: number) {
+  const params = new URLSearchParams()
+
+  if (q) {
+    params.set('q', q)
+  }
+
+  params.set('page', String(numero))
+
+  return `/trofeos?${params.toString()}`
+}
 ---
 
 <html lang="es">
@@ -22,13 +72,38 @@ const { data: trofeos, error } = await supabase
 
       <p>Consulta pública de todos los trofeos registrados.</p>
 
+      <form method="GET" action="/trofeos">
+        <input
+          type="text"
+          name="q"
+          value={q}
+          placeholder="Buscar trofeo por nombre"
+        />
+
+        <button type="submit">
+          Buscar
+        </button>
+
+        {
+          q && (
+            <a href="/trofeos">
+              Limpiar búsqueda
+            </a>
+          )
+        }
+      </form>
+
+      <p>
+        Trofeos encontrados: {totalTrofeos}
+      </p>
+
       {
         error ? (
           <p>Error al cargar los trofeos: {error.message}</p>
-        ) : (
+        ) : trofeos && trofeos.length > 0 ? (
           <div>
             {
-              trofeos?.map((trofeo) => (
+              trofeos.map((trofeo) => (
                 <article>
                   <h2>{trofeo.nombre}</h2>
 
@@ -54,6 +129,34 @@ const { data: trofeos, error } = await supabase
               ))
             }
           </div>
+        ) : (
+          <p>No se encontraron trofeos.</p>
+        )
+      }
+
+      {
+        totalPaginas > 1 && (
+          <nav>
+            {
+              page > 1 && (
+                <a href={urlPagina(page - 1)}>
+                  Anterior
+                </a>
+              )
+            }
+
+            <span>
+              {' '}Página {page} de {totalPaginas}{' '}
+            </span>
+
+            {
+              page < totalPaginas && (
+                <a href={urlPagina(page + 1)}>
+                  Siguiente
+                </a>
+              )
+            }
+          </nav>
         )
       }
     </main>
