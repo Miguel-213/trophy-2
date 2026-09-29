@@ -1,5 +1,5 @@
 {
-  "name": "",
+  "name": "trophy-2",
   "type": "module",
   "version": "0.0.1",
   "engines": {
@@ -9,12 +9,17 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "generate-types": "wrangler types"
   },
   "dependencies": {
+    "@astrojs/cloudflare": "^14.3.3",
     "astro": "^7.3.5"
   },
   "allowScripts": {
     "esbuild": true
+  },
+  "devDependencies": {
+    "wrangler": "^4.143.0"
   }
 }
