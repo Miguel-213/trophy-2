@@ -76,129 +76,137 @@ function urlPagina(numero: number) {
 
 <Layout title="Trofeos">
 
-  <h2>Listado de trofeos</h2>
+  <h1>Listado de trofeos</h1>
 
-  <p>
-    Consulta pública de todos los trofeos registrados.
-  </p>
+  <section>
 
-  <form
-    method="GET"
-    action="/trofeos"
-  >
-    <input
-      type="text"
-      name="q"
-      value={q}
-      placeholder="Buscar trofeo por nombre"
-    />
+    <p>
+      Consulta pública de todos los trofeos registrados.
+    </p>
 
-    <button type="submit">
-      Buscar
-    </button>
+    <form
+      class="buscador"
+      method="GET"
+      action="/trofeos"
+    >
+      <input
+        type="text"
+        name="q"
+        value={q}
+        placeholder="Buscar trofeo por nombre"
+      />
+
+      <button type="submit">
+        Buscar
+      </button>
+
+      {
+        q && (
+          <a href="/trofeos">
+            Limpiar búsqueda
+          </a>
+        )
+      }
+    </form>
+
+    <p>
+      Trofeos encontrados: {totalTrofeos}
+    </p>
 
     {
-      q && (
-        <a href="/trofeos">
-          Limpiar búsqueda
-        </a>
+      error ? (
+
+        <p class="error">
+          Error al cargar los trofeos:
+          {error.message}
+        </p>
+
+      ) : trofeos && trofeos.length > 0 ? (
+
+        <div>
+          {
+            trofeos.map((trofeo) => (
+              <article
+                class:list={[
+                  'trofeo',
+                  { conseguido: trofeo.estado }
+                ]}
+              >
+
+                <h3>
+                  {trofeo.nombre}
+                </h3>
+
+                <p>
+                  <strong>Juego:</strong>
+                  {' '}
+                  {trofeo.juego}
+                </p>
+
+                <p>
+                  <strong>Dificultad:</strong>
+                  {' '}
+                  {trofeo.dificultad}
+                </p>
+
+                <p>
+                  <strong>Requisito:</strong>
+                  {' '}
+                  {trofeo.requisito}
+                </p>
+
+                <p>
+                  <strong>Estado:</strong>
+                  {' '}
+                  {
+                    trofeo.estado
+                      ? 'Conseguido'
+                      : 'No conseguido'
+                  }
+                </p>
+
+              </article>
+            ))
+          }
+        </div>
+
+      ) : (
+
+        <p>
+          No se encontraron trofeos.
+        </p>
+
       )
     }
-  </form>
 
-  <p>
-    Trofeos encontrados: {totalTrofeos}
-  </p>
+    {
+      totalPaginas > 1 && (
+        <nav class="paginacion">
 
-  {
-    error ? (
+          {
+            page > 1 && (
+              <a href={urlPagina(page - 1)}>
+                Anterior
+              </a>
+            )
+          }
 
-      <p>
-        Error al cargar los trofeos:
-        {error.message}
-      </p>
+          <span>
+            Página {page} de {totalPaginas}
+          </span>
 
-    ) : trofeos && trofeos.length > 0 ? (
+          {
+            page < totalPaginas && (
+              <a href={urlPagina(page + 1)}>
+                Siguiente
+              </a>
+            )
+          }
 
-      <div>
-        {
-          trofeos.map((trofeo) => (
-            <article>
+        </nav>
+      )
+    }
 
-              <h3>
-                {trofeo.nombre}
-              </h3>
-
-              <p>
-                <strong>Juego:</strong>
-                {' '}
-                {trofeo.juego}
-              </p>
-
-              <p>
-                <strong>Dificultad:</strong>
-                {' '}
-                {trofeo.dificultad}
-              </p>
-
-              <p>
-                <strong>Requisito:</strong>
-                {' '}
-                {trofeo.requisito}
-              </p>
-
-              <p>
-                <strong>Estado:</strong>
-                {' '}
-                {
-                  trofeo.estado
-                    ? 'Conseguido'
-                    : 'No conseguido'
-                }
-              </p>
-
-              <hr />
-
-            </article>
-          ))
-        }
-      </div>
-
-    ) : (
-
-      <p>
-        No se encontraron trofeos.
-      </p>
-
-    )
-  }
-
-  {
-    totalPaginas > 1 && (
-      <nav>
-
-        {
-          page > 1 && (
-            <a href={urlPagina(page - 1)}>
-              Anterior
-            </a>
-          )
-        }
-
-        <span>
-          Página {page} de {totalPaginas}
-        </span>
-
-        {
-          page < totalPaginas && (
-            <a href={urlPagina(page + 1)}>
-              Siguiente
-            </a>
-          )
-        }
-
-      </nav>
-    )
-  }
+  </section>
 
 </Layout>

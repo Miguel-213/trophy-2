@@ -3,15 +3,16 @@ import { ClientRouter } from 'astro:transitions'
 
 interface Props {
   title: string
+  variante?: 'auth'
 }
 
-const { title } = Astro.props
+const { title, variante } = Astro.props
 ---
 
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>{title} | Trophy 2</title>
 
@@ -19,55 +20,435 @@ const { title } = Astro.props
   </head>
 
   <body>
-    <header>
-      <h1>Trophy 2</h1>
+    <header class="barra">
+      <nav class="navegacion">
+        <a class="logo" href="/">🏆 Trophy 2</a>
 
-      <nav>
-        <a href="/">Inicio</a>
+        <div class="enlaces">
+          <a href="/">Inicio</a>
 
-        <a href="/trofeos">Trofeos</a>
+          <a href="/trofeos">Trofeos</a>
 
-        <a href="/acerca-de">Acerca de</a>
+          <a href="/acerca-de">Acerca de</a>
 
-        <a href="/login" data-astro-reload>
-          Login
-        </a>
+          <a href="/admin" data-astro-reload>
+            Administrar
+          </a>
 
-        <a href="/registro" data-astro-reload>
-          Registro
-        </a>
+          <a class="boton-sesion" href="/login" data-astro-reload>
+            Login
+          </a>
 
-        <a href="/admin" data-astro-reload>
-          Administrar
-        </a>
+          <a href="/registro" data-astro-reload>
+            Registro
+          </a>
+        </div>
       </nav>
     </header>
 
-    <main>
+    <main class:list={[variante]}>
       <slot />
     </main>
   </body>
 </html>
 
-<style>
+<style is:global>
+  * {
+    box-sizing: border-box;
+  }
+
   body {
-    font-family: Arial, sans-serif;
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 20px;
+    margin: 0;
+    background: #f3f4f7;
+    color: #1f2937;
+    font-family: Arial, Helvetica, sans-serif;
   }
 
-  header {
-    margin-bottom: 40px;
+  a {
+    color: #26334f;
+    text-decoration: none;
   }
 
-  nav {
+  /* Barra superior */
+
+  .barra {
+    background: #141c2f;
+    border-bottom: 3px solid #d9a928;
+  }
+
+  .navegacion {
+    max-width: 1100px;
+    margin: auto;
+    padding: 16px 24px;
+
     display: flex;
-    gap: 16px;
-    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
   }
 
-  nav a {
-    color: #333;
+  .logo {
+    color: white;
+    font-size: 21px;
+    font-weight: bold;
+  }
+
+  .enlaces {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .enlaces a {
+    color: #e5e7eb;
+    font-weight: 500;
+  }
+
+  .enlaces a:hover {
+    color: #f4c542;
+  }
+
+  .enlaces .boton-sesion {
+    background: #308c91;
+    font-weight: bold;
+    padding: 9px 14px;
+    border-radius: 7px;
+  }
+
+  .enlaces .boton-sesion:hover {
+    background: rgb(91, 100, 89);
+  }
+
+  /* Contenido */
+
+  main {
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 0 25px 50px;
+  }
+
+  main h1 {
+    color: #141c2f;
+    font-size: 36px;
+    margin: 0 0 20px;
+  }
+
+  main h2 {
+    color: #26334f;
+    margin-top: 0;
+    margin-bottom: 20px;
+  }
+
+  main > section {
+    background: white;
+    padding: 25px;
+    margin-bottom: 25px;
+    border-radius: 12px;
+
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  }
+
+  main > section p {
+    line-height: 1.6;
+  }
+
+  main > section p:last-child {
+    margin-bottom: 0;
+  }
+
+  .cabecera {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .cabecera button {
+    margin-right: 0;
+  }
+
+  #usuario {
+    margin: 0 0 20px;
+    color: #374151;
+  }
+
+  /* Formularios */
+
+  form {
+    max-width: 650px;
+  }
+
+  form div {
+    margin-bottom: 16px;
+  }
+
+  label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: bold;
+    color: #374151;
+  }
+
+  input[type='text'],
+  input[type='email'],
+  input[type='password'],
+  select,
+  textarea {
+    width: 100%;
+    padding: 11px 12px;
+
+    border: 1px solid #cbd0da;
+    border-radius: 7px;
+
+    background: white;
+    font-family: inherit;
+    font-size: 15px;
+  }
+
+  textarea {
+    min-height: 90px;
+    resize: vertical;
+  }
+
+  input:focus,
+  select:focus,
+  textarea:focus {
+    outline: none;
+    border-color: #d9a928;
+
+    box-shadow: 0 0 0 3px rgba(217, 169, 40, 0.15);
+  }
+
+  /* Botones */
+
+  button {
+    padding: 10px 17px;
+    margin-right: 8px;
+
+    border: none;
+    border-radius: 7px;
+
+    background: #26334f;
+    color: white;
+
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background: #141c2f;
+  }
+
+  button:disabled {
+    background: #9ca3af;
+    cursor: not-allowed;
+  }
+
+  .boton {
+    display: inline-block;
+    padding: 11px 20px;
+
+    border-radius: 7px;
+
+    background: #d9a928;
+    color: #141c2f;
+    font-weight: bold;
+  }
+
+  .boton:hover {
+    background: #f4c542;
+  }
+
+  /* Mensajes */
+
+  #mensaje {
+    margin: 16px 0 0;
+    color: #26334f;
+    font-weight: bold;
+  }
+
+  #mensaje:empty {
+    display: none;
+  }
+
+  .error {
+    color: #b91c1c;
+  }
+
+  /* Buscador */
+
+  .buscador {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+
+    max-width: 600px;
+    margin-bottom: 20px;
+  }
+
+  .buscador input {
+    flex: 1;
+    width: auto;
+    min-width: 180px;
+  }
+
+  .buscador button {
+    margin-right: 0;
+  }
+
+  .buscador a {
+    font-weight: bold;
+  }
+
+  /* Tarjetas de trofeos */
+
+  .trofeo {
+    background: #f8f9fb;
+
+    border: 1px solid #e1e4e9;
+    border-left: 5px solid #d9a928;
+
+    border-radius: 10px;
+
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+
+  .trofeo.conseguido {
+    border-left: 5px solid green;
+  }
+
+  .trofeo h3 {
+    color: #141c2f;
+    font-size: 23px;
+    margin-top: 0;
+    margin-bottom: 15px;
+  }
+
+  .trofeo p {
+    margin: 8px 0;
+    line-height: 1.5;
+  }
+
+  .trofeo button {
+    margin-top: 8px;
+  }
+
+  .trofeo hr {
+    display: none;
+  }
+
+  /* Paginación */
+
+  .paginacion {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    margin-top: 25px;
+  }
+
+  .paginacion a {
+    padding: 10px 17px;
+    border-radius: 7px;
+
+    background: #26334f;
+    color: white;
+    font-weight: bold;
+  }
+
+  .paginacion a:hover {
+    background: #141c2f;
+  }
+
+  .paginacion span {
+    font-weight: bold;
+    color: #374151;
+  }
+
+  /* Login y registro */
+
+  main.auth {
+    width: 90%;
+    max-width: 420px;
+
+    margin: 70px auto;
+    padding: 35px;
+
+    background: white;
+    border-radius: 12px;
+
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.1);
+  }
+
+  main.auth h1 {
+    margin-bottom: 28px;
+    text-align: center;
+  }
+
+  main.auth form {
+    max-width: none;
+  }
+
+  main.auth button {
+    width: 100%;
+    padding: 11px;
+
+    margin: 0;
+
+    background: #d9a928;
+    color: #141c2f;
+  }
+
+  main.auth button:hover {
+    background: #f4c542;
+  }
+
+  main.auth #mensaje {
+    text-align: center;
+  }
+
+  .enlace-auth {
+    margin: 20px 0 0;
+    text-align: center;
+  }
+
+  .enlace-auth a {
+    font-weight: bold;
+  }
+
+  /* Responsive */
+
+  @media (max-width: 650px) {
+    .navegacion {
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .enlaces {
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    main {
+      margin-top: 20px;
+      padding: 0 15px 30px;
+    }
+
+    main h1 {
+      font-size: 29px;
+    }
+
+    main > section {
+      padding: 18px;
+    }
+
+    main.auth {
+      margin-top: 40px;
+      padding: 25px;
+    }
   }
 </style>

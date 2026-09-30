@@ -4,140 +4,126 @@ import Layout from '../layouts/Layout.astro'
 
 <Layout title="Administrar trofeos">
 
-  <h2>Administrar trofeos</h2>
+  <div class="cabecera">
+    <h1>Administrar trofeos</h1>
+
+    <button id="cerrar-sesion">
+      Cerrar sesión
+    </button>
+  </div>
 
   <p id="usuario"></p>
 
-  <button id="cerrar-sesion">
-    Cerrar sesión
-  </button>
+  <section>
 
-  <hr />
+    <h2 id="titulo-formulario">
+      Crear trofeo
+    </h2>
 
-  <h2 id="titulo-formulario">
-    Crear trofeo
-  </h2>
+    <form id="form-trofeo">
 
-  <form id="form-trofeo">
-
-    <input
-      type="hidden"
-      id="trofeo-id"
-    />
-
-    <label for="nombre">
-      Nombre
-    </label>
-
-    <br />
-
-    <input
-      id="nombre"
-      type="text"
-      required
-    />
-
-    <br /><br />
-
-    <label for="juego">
-      Juego
-    </label>
-
-    <br />
-
-    <input
-      id="juego"
-      type="text"
-      required
-    />
-
-    <br /><br />
-
-    <label for="dificultad">
-      Dificultad
-    </label>
-
-    <br />
-
-    <select
-      id="dificultad"
-      required
-    >
-      <option value="Fácil">
-        Fácil
-      </option>
-
-      <option value="Media">
-        Media
-      </option>
-
-      <option value="Difícil">
-        Difícil
-      </option>
-    </select>
-
-    <br /><br />
-
-    <label for="requisito">
-      Requisito
-    </label>
-
-    <br />
-
-    <textarea
-      id="requisito"
-      required
-    ></textarea>
-
-    <br /><br />
-
-    <label for="imagen">
-      Imagen
-    </label>
-
-    <br />
-
-    <input
-      id="imagen"
-      type="text"
-    />
-
-    <br /><br />
-
-    <label>
       <input
-        id="estado"
-        type="checkbox"
+        type="hidden"
+        id="trofeo-id"
       />
 
-      Conseguido
-    </label>
+      <div>
+        <label for="nombre">Nombre</label>
 
-    <br /><br />
+        <input
+          id="nombre"
+          type="text"
+          required
+        />
+      </div>
 
-    <button type="submit">
-      Guardar
-    </button>
+      <div>
+        <label for="juego">Juego</label>
 
-    <button
-      type="button"
-      id="cancelar"
-      hidden
-    >
-      Cancelar edición
-    </button>
+        <input
+          id="juego"
+          type="text"
+          required
+        />
+      </div>
 
-  </form>
+      <div>
+        <label for="dificultad">Dificultad</label>
 
-  <p id="mensaje"></p>
+        <select
+          id="dificultad"
+          required
+        >
+          <option value="Fácil">
+            Fácil
+          </option>
 
-  <hr />
+          <option value="Media">
+            Media
+          </option>
 
-  <h2>Trofeos</h2>
+          <option value="Difícil">
+            Difícil
+          </option>
+        </select>
+      </div>
 
-  <div id="lista-trofeos">
-    Cargando...
-  </div>
+      <div>
+        <label for="requisito">Requisito</label>
+
+        <textarea
+          id="requisito"
+          required
+        ></textarea>
+      </div>
+
+      <div>
+        <label for="imagen">Imagen</label>
+
+        <input
+          id="imagen"
+          type="text"
+        />
+      </div>
+
+      <div>
+        <label>
+          <input
+            id="estado"
+            type="checkbox"
+          />
+
+          Conseguido
+        </label>
+      </div>
+
+      <button type="submit">
+        Guardar
+      </button>
+
+      <button
+        type="button"
+        id="cancelar"
+        hidden
+      >
+        Cancelar edición
+      </button>
+
+    </form>
+
+    <p id="mensaje"></p>
+
+  </section>
+
+  <section>
+
+    <h2>Trofeos</h2>
+
+    <div id="lista-trofeos">
+      Cargando...
+    </div>
+
+  </section>
 
 
   <script>
@@ -274,6 +260,11 @@ import Layout from '../layouts/Layout.astro'
             document.createElement(
               'article'
             )
+
+          article.className =
+            trofeo.estado
+              ? 'trofeo conseguido'
+              : 'trofeo'
 
 
           article.innerHTML = `
