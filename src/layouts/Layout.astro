@@ -1,0 +1,73 @@
+---
+import { ClientRouter } from 'astro:transitions'
+
+interface Props {
+  title: string
+}
+
+const { title } = Astro.props
+---
+
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+
+    <title>{title} | Trophy 2</title>
+
+    <ClientRouter />
+  </head>
+
+  <body>
+    <header>
+      <h1>Trophy 2</h1>
+
+      <nav>
+        <a href="/">Inicio</a>
+
+        <a href="/trofeos">Trofeos</a>
+
+        <a href="/acerca-de">Acerca de</a>
+
+        <a href="/login" data-astro-reload>
+          Login
+        </a>
+
+        <a href="/registro" data-astro-reload>
+          Registro
+        </a>
+
+        <a href="/admin" data-astro-reload>
+          Administrar
+        </a>
+      </nav>
+    </header>
+
+    <main>
+      <slot />
+    </main>
+  </body>
+</html>
+
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+
+  header {
+    margin-bottom: 40px;
+  }
+
+  nav {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  nav a {
+    color: #333;
+  }
+</style>

@@ -2,50 +2,62 @@
 export const prerender = false
 
 import { supabase } from '../lib/supabase'
+import Layout from '../layouts/Layout.astro'
 
 // Leer los parámetros de la URL
 const q = Astro.url.searchParams.get('q')?.trim() || ''
-const pageParam = Number(Astro.url.searchParams.get('page') || '1')
 
-// Evitamos páginas 0, negativas o valores raros
-const page = Number.isInteger(pageParam) && pageParam > 0
-  ? pageParam
-  : 1
+const pageParam = Number(
+  Astro.url.searchParams.get('page') || '1'
+)
 
-// Queremos mostrar 5 trofeos por página
+// Evitar páginas inválidas
+const page =
+  Number.isInteger(pageParam) && pageParam > 0
+    ? pageParam
+    : 1
+
+// Cantidad de trofeos por página
 const porPagina = 5
 
-// Calculamos qué registros pedirle a Supabase
+// Calcular qué registros necesitamos
 const desde = (page - 1) * porPagina
 const hasta = desde + porPagina - 1
 
-// Creamos la consulta
+// Consulta a Supabase
 let consulta = supabase
   .from('trofeos')
   .select('*', { count: 'exact' })
   .order('id', { ascending: true })
 
-// Si escribieron algo en la búsqueda,
-// filtramos por el nombre del trofeo
+// Buscar por nombre
 if (q) {
-  consulta = consulta.ilike('nombre', `%${q}%`)
+  consulta = consulta.ilike(
+    'nombre',
+    `%${q}%`
+  )
 }
 
-// Aplicamos la paginación
-consulta = consulta.range(desde, hasta)
+// Aplicar paginación
+consulta = consulta.range(
+  desde,
+  hasta
+)
 
-// Ejecutamos la consulta
+// Ejecutar consulta
 const {
   data: trofeos,
   error,
   count
 } = await consulta
 
-// Calculamos cuántas páginas existen
 const totalTrofeos = count || 0
-const totalPaginas = Math.ceil(totalTrofeos / porPagina)
 
-// Función para crear las URLs de los botones
+const totalPaginas = Math.ceil(
+  totalTrofeos / porPagina
+)
+
+// Crear URL para cambiar de página
 function urlPagina(numero: number) {
   const params = new URLSearchParams()
 
@@ -53,112 +65,140 @@ function urlPagina(numero: number) {
     params.set('q', q)
   }
 
-  params.set('page', String(numero))
+  params.set(
+    'page',
+    String(numero)
+  )
 
   return `/trofeos?${params.toString()}`
 }
 ---
 
-<html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
-    <title>Trofeos | Trophy 2</title>
-  </head>
+<Layout title="Trofeos">
 
-  <body>
-    <main>
-      <h1>Listado de trofeos</h1>
+  <h2>Listado de trofeos</h2>
 
-      <p>Consulta pública de todos los trofeos registrados.</p>
+  <p>
+    Consulta pública de todos los trofeos registrados.
+  </p>
 
-      <form method="GET" action="/trofeos">
-        <input
-          type="text"
-          name="q"
-          value={q}
-          placeholder="Buscar trofeo por nombre"
-        />
+  <form
+    method="GET"
+    action="/trofeos"
+  >
+    <input
+      type="text"
+      name="q"
+      value={q}
+      placeholder="Buscar trofeo por nombre"
+    />
 
-        <button type="submit">
-          Buscar
-        </button>
+    <button type="submit">
+      Buscar
+    </button>
+
+    {
+      q && (
+        <a href="/trofeos">
+          Limpiar búsqueda
+        </a>
+      )
+    }
+  </form>
+
+  <p>
+    Trofeos encontrados: {totalTrofeos}
+  </p>
+
+  {
+    error ? (
+
+      <p>
+        Error al cargar los trofeos:
+        {error.message}
+      </p>
+
+    ) : trofeos && trofeos.length > 0 ? (
+
+      <div>
+        {
+          trofeos.map((trofeo) => (
+            <article>
+
+              <h3>
+                {trofeo.nombre}
+              </h3>
+
+              <p>
+                <strong>Juego:</strong>
+                {' '}
+                {trofeo.juego}
+              </p>
+
+              <p>
+                <strong>Dificultad:</strong>
+                {' '}
+                {trofeo.dificultad}
+              </p>
+
+              <p>
+                <strong>Requisito:</strong>
+                {' '}
+                {trofeo.requisito}
+              </p>
+
+              <p>
+                <strong>Estado:</strong>
+                {' '}
+                {
+                  trofeo.estado
+                    ? 'Conseguido'
+                    : 'No conseguido'
+                }
+              </p>
+
+              <hr />
+
+            </article>
+          ))
+        }
+      </div>
+
+    ) : (
+
+      <p>
+        No se encontraron trofeos.
+      </p>
+
+    )
+  }
+
+  {
+    totalPaginas > 1 && (
+      <nav>
 
         {
-          q && (
-            <a href="/trofeos">
-              Limpiar búsqueda
+          page > 1 && (
+            <a href={urlPagina(page - 1)}>
+              Anterior
             </a>
           )
         }
-      </form>
 
-      <p>
-        Trofeos encontrados: {totalTrofeos}
-      </p>
+        <span>
+          Página {page} de {totalPaginas}
+        </span>
 
-      {
-        error ? (
-          <p>Error al cargar los trofeos: {error.message}</p>
-        ) : trofeos && trofeos.length > 0 ? (
-          <div>
-            {
-              trofeos.map((trofeo) => (
-                <article>
-                  <h2>{trofeo.nombre}</h2>
+        {
+          page < totalPaginas && (
+            <a href={urlPagina(page + 1)}>
+              Siguiente
+            </a>
+          )
+        }
 
-                  <p>
-                    <strong>Juego:</strong> {trofeo.juego}
-                  </p>
+      </nav>
+    )
+  }
 
-                  <p>
-                    <strong>Dificultad:</strong> {trofeo.dificultad}
-                  </p>
-
-                  <p>
-                    <strong>Requisito:</strong> {trofeo.requisito}
-                  </p>
-
-                  <p>
-                    <strong>Estado:</strong>{' '}
-                    {trofeo.estado ? 'Conseguido' : 'No conseguido'}
-                  </p>
-
-                  <hr />
-                </article>
-              ))
-            }
-          </div>
-        ) : (
-          <p>No se encontraron trofeos.</p>
-        )
-      }
-
-      {
-        totalPaginas > 1 && (
-          <nav>
-            {
-              page > 1 && (
-                <a href={urlPagina(page - 1)}>
-                  Anterior
-                </a>
-              )
-            }
-
-            <span>
-              {' '}Página {page} de {totalPaginas}{' '}
-            </span>
-
-            {
-              page < totalPaginas && (
-                <a href={urlPagina(page + 1)}>
-                  Siguiente
-                </a>
-              )
-            }
-          </nav>
-        )
-      }
-    </main>
-  </body>
-</html>
+</Layout>

@@ -1,31 +1,16 @@
-<html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
-    <title>Trophy 2</title>
-  </head>
+---
+import Layout from '../layouts/Layout.astro'
+---
 
-  <body>
-    <main>
-      <h1>Trophy 2</h1>
+<Layout title="Inicio">
+  <h2>Bienvenido a Trophy 2</h2>
 
-      <p>Aplicación de administración de trofeos.</p>
+  <p>
+    Aplicación para consultar y administrar
+    trofeos de videojuegos.
+  </p>
 
-      <nav>
-        <a href="/trofeos">Ver trofeos</a>
-
-        <br /><br />
-
-        <a href="/login">Iniciar sesión</a>
-
-        <br /><br />
-
-        <a href="/admin">Administrar trofeos</a>
-
-        <br /><br />
-
-        <a href="/registro">Registrarse</a>
-      </nav>
-    </main>
-  </body>
-</html>
+  <a href="/trofeos">
+    Ver listado de trofeos
+  </a>
+</Layout>
