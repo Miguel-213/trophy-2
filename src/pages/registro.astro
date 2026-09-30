@@ -46,69 +46,52 @@ import Layout from '../layouts/Layout.astro'
   </p>
 
   <script>
-    import { supabase } from '../lib/supabase'
+  import { getSupabase } from '../lib/supabase'
 
-    const form =
-      document.querySelector<HTMLFormElement>(
-        '#form-registro'
-      )
+  // Instanciamos el cliente para el navegador usando la función helper
+  const supabase = getSupabase()
 
-    const mensaje =
-      document.querySelector<HTMLParagraphElement>(
-        '#mensaje'
-      )
+  const form =
+    document.querySelector<HTMLFormElement>('#form-registro')
 
-    form?.addEventListener(
-      'submit',
-      async (event) => {
+  const mensaje =
+    document.querySelector<HTMLParagraphElement>('#mensaje')
 
-        event.preventDefault()
+  form?.addEventListener(
+    'submit',
+    async (event) => {
+      event.preventDefault()
 
-        const formData =
-          new FormData(form)
+      const formData = new FormData(form)
 
-        const email =
-          String(
-            formData.get('email')
-          )
+      const email = String(formData.get('email'))
+      const password = String(formData.get('password'))
 
-        const password =
-          String(
-            formData.get('password')
-          )
-
-        if (mensaje) {
-          mensaje.textContent =
-            'Creando cuenta...'
-        }
-
-        const { error } =
-          await supabase.auth.signUp({
-            email,
-            password
-          })
-
-        if (error) {
-
-          if (mensaje) {
-            mensaje.textContent =
-              error.message
-          }
-
-          return
-        }
-
-        if (mensaje) {
-          mensaje.textContent =
-            'Cuenta creada correctamente'
-        }
-
-        setTimeout(() => {
-          window.location.href =
-            '/login'
-        }, 1000)
+      if (mensaje) {
+        mensaje.textContent = 'Creando cuenta...'
       }
-    )
-  </script>
+
+      const { error } = await supabase.auth.signUp({
+        email,
+        password
+      })
+
+      if (error) {
+        if (mensaje) {
+          mensaje.textContent = error.message
+        }
+        return
+      }
+
+      if (mensaje) {
+        mensaje.textContent = 'Cuenta creada correctamente'
+      }
+
+      setTimeout(() => {
+        window.location.href = '/login'
+      }, 1000)
+    }
+  )
+</script>
 
 </Layout>

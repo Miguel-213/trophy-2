@@ -5,6 +5,9 @@
     "**/*",
     "./worker-configuration.d.ts"
   ],
+  "compilerOptions": {
+    "types": ["@cloudflare/workers-types"]
+  },
   "exclude": [
     "dist"
   ]

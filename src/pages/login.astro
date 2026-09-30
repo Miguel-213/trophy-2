@@ -43,77 +43,55 @@ import Layout from '../layouts/Layout.astro'
       Registrarse
     </a>
   </p>
+<script>
+  import { getSupabase } from '../lib/supabase'
 
-  <script>
-    import { supabase } from '../lib/supabase'
+  // Instanciamos el cliente para el navegador sin parámetros
+  const supabase = getSupabase()
 
-    const form =
-      document.querySelector<HTMLFormElement>(
-        '#form-login'
-      )
+  const form =
+    document.querySelector<HTMLFormElement>('#form-login')
 
-    const mensaje =
-      document.querySelector<HTMLParagraphElement>(
-        '#mensaje'
-      )
+  const mensaje =
+    document.querySelector<HTMLParagraphElement>('#mensaje')
 
-    form?.addEventListener(
-      'submit',
-      async (event) => {
+  form?.addEventListener(
+    'submit',
+    async (event) => {
+      event.preventDefault()
 
-        event.preventDefault()
+      const formData = new FormData(form)
 
-        const formData =
-          new FormData(form)
+      const email = String(formData.get('email'))
+      const password = String(formData.get('password'))
 
-        const email =
-          String(
-            formData.get('email')
-          )
-
-        const password =
-          String(
-            formData.get('password')
-          )
-
-        if (mensaje) {
-          mensaje.textContent =
-            'Iniciando sesión...'
-        }
-
-        const {
-          data,
-          error
-        } = await supabase.auth
-          .signInWithPassword({
-            email,
-            password
-          })
-
-        if (error) {
-
-          if (mensaje) {
-            mensaje.textContent =
-              'Correo o contraseña incorrectos'
-          }
-
-          return
-        }
-
-        if (data.session) {
-
-          if (mensaje) {
-            mensaje.textContent =
-              'Sesión iniciada correctamente'
-          }
-
-          setTimeout(() => {
-            window.location.href =
-              '/admin'
-          }, 1000)
-        }
+      if (mensaje) {
+        mensaje.textContent = 'Iniciando sesión...'
       }
-    )
-  </script>
+
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      })
+
+      if (error) {
+        if (mensaje) {
+          mensaje.textContent = 'Correo o contraseña incorrectos'
+        }
+        return
+      }
+
+      if (data.session) {
+        if (mensaje) {
+          mensaje.textContent = 'Sesión iniciada correctamente'
+        }
+
+        setTimeout(() => {
+          window.location.href = '/admin'
+        }, 1000)
+      }
+    }
+  )
+</script>
 
 </Layout>

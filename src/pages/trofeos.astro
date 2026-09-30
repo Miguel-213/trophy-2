@@ -1,8 +1,12 @@
 ---
 export const prerender = false
 
-import { supabase } from '../lib/supabase'
+import { env } from 'cloudflare:workers'
+import { getSupabase } from '../lib/supabase'
 import Layout from '../layouts/Layout.astro'
+
+// Instanciamos el cliente en el servidor pasando el runtime de Cloudflare
+const supabase = getSupabase(env)
 
 // Leer los parámetros de la URL
 const q = Astro.url.searchParams.get('q')?.trim() || ''

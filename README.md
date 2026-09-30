@@ -1,43 +1,103 @@
-# Astro Starter Kit: Minimal
+# Trophy 2
 
-```sh
-npm create astro@latest -- --template minimal
+Aplicación web desarrollada con Astro y Supabase para consultar y administrar trofeos de videojuegos.
+
+## Integrantes
+
+- Miguel
+- (Nombre de tu compañero)
+
+## Tecnologías utilizadas
+
+- Astro
+- Supabase
+- Cloudflare Workers
+- TypeScript
+- HTML
+- CSS
+
+## Funcionalidades
+
+### Públicas
+
+- Página de inicio
+- Página Acerca de
+- Listado de trofeos
+- Búsqueda por nombre
+- Paginación
+
+### Privadas
+
+- Registro de usuarios
+- Inicio de sesión
+- Cierre de sesión
+- Crear trofeos
+- Editar trofeos
+- Eliminar trofeos
+
+## Arquitectura
+
+### SSG
+
+Las siguientes páginas son generadas estáticamente:
+
+- /
+- /acerca-de
+- /login
+- /registro
+- /admin
+
+### SSR
+
+La página `/trofeos` utiliza renderizado del lado del servidor para obtener información actualizada desde Supabase.
+
+## Variables de entorno
+
+Crear un archivo `.env` utilizando como referencia `.env.example`.
+
+Variables necesarias:
+
+```env
+PUBLIC_SUPABASE_URL=
+PUBLIC_SUPABASE_PUBLISHABLE_KEY=
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## Instalación
 
-## 🚀 Project Structure
+Clonar el repositorio:
 
-Inside of your Astro project, you'll see the following folders and files:
-
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
+```bash
+git clone https://github.com/Miguel-213/trophy-2.git
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+Entrar al proyecto:
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+```bash
+cd trophy-2
+```
 
-Any static assets, like images, can be placed in the `public/` directory.
+Instalar dependencias:
 
-## 🧞 Commands
+```bash
+npm install
+```
 
-All commands are run from the root of the project, from a terminal:
+Iniciar servidor de desarrollo:
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+```bash
+npm run dev
+```
 
-## 👀 Want to learn more?
+## Compilar para producción
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+```bash
+npm run build
+```
+
+## Despliegue
+
+La aplicación está preparada para desplegarse en Cloudflare Workers.
+
+## URL de producción
+
+Pendiente de despliegue.
