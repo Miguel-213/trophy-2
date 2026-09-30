@@ -1,0 +1,412 @@
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Administrar trofeos | Trophy 2</title>
+  </head>
+
+  <body>
+    <main>
+      <h1>Administrar trofeos</h1>
+
+      <p id="usuario"></p>
+
+      <button id="cerrar-sesion">
+        Cerrar sesión
+      </button>
+
+      <hr />
+
+      <h2 id="titulo-formulario">Crear trofeo</h2>
+
+      <form id="form-trofeo">
+        <input
+          type="hidden"
+          id="trofeo-id"
+        />
+
+        <label for="nombre">Nombre</label>
+        <br />
+
+        <input
+          id="nombre"
+          type="text"
+          required
+        />
+
+        <br /><br />
+
+        <label for="juego">Juego</label>
+        <br />
+
+        <input
+          id="juego"
+          type="text"
+          required
+        />
+
+        <br /><br />
+
+        <label for="dificultad">Dificultad</label>
+        <br />
+
+        <select
+          id="dificultad"
+          required
+        >
+          <option value="Fácil">Fácil</option>
+          <option value="Media">Media</option>
+          <option value="Difícil">Difícil</option>
+        </select>
+
+        <br /><br />
+
+        <label for="requisito">Requisito</label>
+        <br />
+
+        <textarea
+          id="requisito"
+          required
+        ></textarea>
+
+        <br /><br />
+
+        <label for="imagen">Imagen</label>
+        <br />
+
+        <input
+          id="imagen"
+          type="text"
+        />
+
+        <br /><br />
+
+        <label>
+          <input
+            id="estado"
+            type="checkbox"
+          />
+          Conseguido
+        </label>
+
+        <br /><br />
+
+        <button type="submit">
+          Guardar
+        </button>
+
+        <button
+          type="button"
+          id="cancelar"
+          hidden
+        >
+          Cancelar edición
+        </button>
+      </form>
+
+      <p id="mensaje"></p>
+
+      <hr />
+
+      <h2>Trofeos</h2>
+
+      <div id="lista-trofeos">
+        Cargando...
+      </div>
+    </main>
+
+    <script>
+  import { supabase } from '../lib/supabase'
+
+  const usuario =
+    document.querySelector<HTMLParagraphElement>('#usuario')
+
+  const cerrarSesion =
+    document.querySelector<HTMLButtonElement>('#cerrar-sesion')!
+
+  const form =
+    document.querySelector<HTMLFormElement>('#form-trofeo')!
+
+  const tituloFormulario =
+    document.querySelector<HTMLHeadingElement>('#titulo-formulario')
+
+  const idInput =
+    document.querySelector<HTMLInputElement>('#trofeo-id')!
+
+  const nombreInput =
+    document.querySelector<HTMLInputElement>('#nombre')!
+
+  const juegoInput =
+    document.querySelector<HTMLInputElement>('#juego')!
+
+  const dificultadInput =
+    document.querySelector<HTMLSelectElement>('#dificultad')!
+
+  const requisitoInput =
+    document.querySelector<HTMLTextAreaElement>('#requisito')!
+
+  const imagenInput =
+    document.querySelector<HTMLInputElement>('#imagen')!
+
+  const estadoInput =
+    document.querySelector<HTMLInputElement>('#estado')!
+
+  const mensaje =
+    document.querySelector<HTMLParagraphElement>('#mensaje')
+
+  const lista =
+    document.querySelector<HTMLDivElement>('#lista-trofeos')!
+
+  const cancelar =
+    document.querySelector<HTMLButtonElement>('#cancelar')!
+
+  // Comprobar si existe una sesión
+  const {
+    data: { session }
+  } = await supabase.auth.getSession()
+
+  if (!session) {
+    window.location.href = '/login'
+  } else {
+    if (usuario) {
+      usuario.textContent =
+        `Sesión iniciada como: ${session.user.email}`
+    }
+
+    await cargarTrofeos()
+  }
+
+  async function cargarTrofeos() {
+    lista.innerHTML = 'Cargando...'
+
+    const { data: trofeos, error } = await supabase
+      .from('trofeos')
+      .select('*')
+      .order('id')
+
+    if (error) {
+      lista.innerHTML = 'Error al cargar los trofeos'
+      return
+    }
+
+    lista.innerHTML = ''
+
+    trofeos?.forEach((trofeo) => {
+      const article = document.createElement('article')
+
+      article.innerHTML = `
+        <h3>${trofeo.nombre}</h3>
+
+        <p>
+          <strong>Juego:</strong>
+          ${trofeo.juego}
+        </p>
+
+        <p>
+          <strong>Dificultad:</strong>
+          ${trofeo.dificultad}
+        </p>
+
+        <p>
+          <strong>Requisito:</strong>
+          ${trofeo.requisito}
+        </p>
+
+        <p>
+          <strong>Estado:</strong>
+          ${trofeo.estado ? 'Conseguido' : 'No conseguido'}
+        </p>
+
+        <button
+          class="editar"
+          data-id="${trofeo.id}"
+        >
+          Editar
+        </button>
+
+        <button
+          class="eliminar"
+          data-id="${trofeo.id}"
+        >
+          Eliminar
+        </button>
+
+        <hr />
+      `
+
+      lista.appendChild(article)
+    })
+
+    agregarEventos()
+  }
+
+  function agregarEventos() {
+    const botonesEditar =
+      document.querySelectorAll<HTMLButtonElement>('.editar')
+
+    botonesEditar.forEach((boton) => {
+      boton.addEventListener('click', () => {
+        const id = boton.dataset.id
+
+        if (id) {
+          editarTrofeo(id)
+        }
+      })
+    })
+
+    const botonesEliminar =
+      document.querySelectorAll<HTMLButtonElement>('.eliminar')
+
+    botonesEliminar.forEach((boton) => {
+      boton.addEventListener('click', () => {
+        const id = boton.dataset.id
+
+        if (id) {
+          eliminarTrofeo(id)
+        }
+      })
+    })
+  }
+
+  async function editarTrofeo(id: string) {
+    const { data: trofeo, error } = await supabase
+      .from('trofeos')
+      .select('*')
+      .eq('id', id)
+      .single()
+
+    if (error || !trofeo) {
+      if (mensaje) {
+        mensaje.textContent =
+          'No se pudo cargar el trofeo'
+      }
+
+      return
+    }
+
+    idInput.value = String(trofeo.id)
+    nombreInput.value = trofeo.nombre
+    juegoInput.value = trofeo.juego
+    dificultadInput.value = trofeo.dificultad
+    requisitoInput.value = trofeo.requisito
+    imagenInput.value = trofeo.imagen ?? ''
+    estadoInput.checked = trofeo.estado
+
+    if (tituloFormulario) {
+      tituloFormulario.textContent =
+        'Editar trofeo'
+    }
+
+    cancelar.hidden = false
+
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    })
+  }
+
+  async function eliminarTrofeo(id: string) {
+    const confirmar = confirm(
+      '¿Seguro que quieres eliminar este trofeo?'
+    )
+
+    if (!confirmar) {
+      return
+    }
+
+    const { error } = await supabase
+      .from('trofeos')
+      .delete()
+      .eq('id', id)
+
+    if (error) {
+      if (mensaje) {
+        mensaje.textContent =
+          'No se pudo eliminar el trofeo'
+      }
+
+      return
+    }
+
+    if (mensaje) {
+      mensaje.textContent =
+        'Trofeo eliminado correctamente'
+    }
+
+    await cargarTrofeos()
+  }
+
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault()
+
+    const id = idInput.value
+
+    const datosTrofeo = {
+      nombre: nombreInput.value,
+      juego: juegoInput.value,
+      dificultad: dificultadInput.value,
+      requisito: requisitoInput.value,
+      imagen: imagenInput.value,
+      estado: estadoInput.checked
+    }
+
+    let error
+
+    if (id) {
+      const resultado = await supabase
+        .from('trofeos')
+        .update(datosTrofeo)
+        .eq('id', id)
+
+      error = resultado.error
+    } else {
+      const resultado = await supabase
+        .from('trofeos')
+        .insert(datosTrofeo)
+
+      error = resultado.error
+    }
+
+    if (error) {
+      if (mensaje) {
+        mensaje.textContent = error.message
+      }
+
+      return
+    }
+
+    if (mensaje) {
+      mensaje.textContent = id
+        ? 'Trofeo actualizado correctamente'
+        : 'Trofeo creado correctamente'
+    }
+
+    limpiarFormulario()
+    await cargarTrofeos()
+  })
+
+  function limpiarFormulario() {
+    form.reset()
+
+    idInput.value = ''
+
+    if (tituloFormulario) {
+      tituloFormulario.textContent =
+        'Crear trofeo'
+    }
+
+    cancelar.hidden = true
+  }
+
+  cancelar.addEventListener('click', () => {
+    limpiarFormulario()
+  })
+
+  cerrarSesion.addEventListener('click', async () => {
+    await supabase.auth.signOut()
+
+    window.location.href = '/login'
+  })
+</script>
+  </body>
+</html>
