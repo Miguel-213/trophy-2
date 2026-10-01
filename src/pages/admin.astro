@@ -155,7 +155,7 @@ import Layout from '../layouts/Layout.astro'
     document.querySelector<HTMLInputElement>('#juego')!
 
   const dificultadInput =
-    document.querySelector<HTMLSelectElement>('#dificultad')!
+  document.querySelector('#dificultad') as HTMLInputElement
 
   const requisitoInput =
     document.querySelector<HTMLTextAreaElement>('#requisito')!
@@ -225,17 +225,61 @@ import Layout from '../layouts/Layout.astro'
 
 
       article.innerHTML = `
-        <h3>${trofeo.nombre}</h3>
-        <p><strong>Juego:</strong> ${trofeo.juego}</p>
-        <p><strong>Dificultad:</strong> ${trofeo.dificultad}</p>
-        <p><strong>Requisito:</strong> ${trofeo.requisito}</p>
-        <p><strong>Estado:</strong> ${
-          trofeo.estado ? 'Conseguido' : 'No conseguido'
-        }</p>
-        <button class="editar" data-id="${trofeo.id}">Editar</button>
-        <button class="eliminar" data-id="${trofeo.id}">Eliminar</button>
-        <hr />
+  ${
+    trofeo.imagen
+      ? `
+        <img
+          src="${trofeo.imagen}"
+          alt="Imagen del trofeo ${trofeo.nombre}"
+          width="300"
+          loading="lazy"
+        />
       `
+      : ''
+  }
+
+  <h3>${trofeo.nombre}</h3>
+
+  <p>
+    <strong>Juego:</strong>
+    ${trofeo.juego}
+  </p>
+
+  <p>
+    <strong>Dificultad:</strong>
+    ${trofeo.dificultad}
+  </p>
+
+  <p>
+    <strong>Requisito:</strong>
+    ${trofeo.requisito}
+  </p>
+
+  <p>
+    <strong>Estado:</strong>
+    ${
+      trofeo.estado
+        ? 'Conseguido'
+        : 'No conseguido'
+    }
+  </p>
+
+  <button
+    class="editar"
+    data-id="${trofeo.id}"
+  >
+    Editar
+  </button>
+
+  <button
+    class="eliminar"
+    data-id="${trofeo.id}"
+  >
+    Eliminar
+  </button>
+
+  <hr />
+`
 
       lista.appendChild(article)
     })

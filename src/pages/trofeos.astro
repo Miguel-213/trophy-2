@@ -5,7 +5,6 @@ import { env } from 'cloudflare:workers'
 import { getSupabase } from '../lib/supabase'
 import Layout from '../layouts/Layout.astro'
 
-// Instanciamos el cliente en el servidor pasando el runtime de Cloudflare
 const supabase = getSupabase(env)
 
 // Leer los parámetros de la URL
@@ -24,11 +23,11 @@ const page =
 // Cantidad de trofeos por página
 const porPagina = 5
 
-// Calcular qué registros necesitamos
+// Calcular registros
 const desde = (page - 1) * porPagina
 const hasta = desde + porPagina - 1
 
-// Consulta a Supabase
+// Consulta
 let consulta = supabase
   .from('trofeos')
   .select('*', { count: 'exact' })
@@ -42,13 +41,12 @@ if (q) {
   )
 }
 
-// Aplicar paginación
+// Paginación
 consulta = consulta.range(
   desde,
   hasta
 )
 
-// Ejecutar consulta
 const {
   data: trofeos,
   error,
@@ -61,7 +59,6 @@ const totalPaginas = Math.ceil(
   totalTrofeos / porPagina
 )
 
-// Crear URL para cambiar de página
 function urlPagina(numero: number) {
   const params = new URLSearchParams()
 
@@ -136,6 +133,17 @@ function urlPagina(numero: number) {
                   { conseguido: trofeo.estado }
                 ]}
               >
+
+                {
+                  trofeo.imagen && (
+                    <img
+                      src={trofeo.imagen}
+                      alt={`Imagen del trofeo ${trofeo.nombre}`}
+                      width="300"
+                      loading="lazy"
+                    />
+                  )
+                }
 
                 <h3>
                   {trofeo.nombre}

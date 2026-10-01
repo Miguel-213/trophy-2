@@ -5,7 +5,7 @@ Aplicación web desarrollada con Astro y Supabase para consultar y administrar t
 ## Integrantes
 
 - Miguel
-- (Nombre de tu compañero)
+- Leider
 
 ## Tecnologías utilizadas
 
